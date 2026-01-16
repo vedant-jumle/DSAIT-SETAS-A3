@@ -94,8 +94,9 @@ def compute_fitness(objectives: Dict[str, Any]) -> float:
 
     You can design a more refined scalarization if desired.
     """
-    # TODO (students)
-    raise NotImplementedError
+    if objectives["crash_count"] == 1:
+        return -1.0
+    return objectives["min_distance"]
 
 
 # ============================================================
@@ -125,13 +126,50 @@ def mutate_config(
       - multiple-parameter mutation
       - adaptive step sizes, etc.
     """
-    # TODO (students)
-    raise NotImplementedError
+    # For now don't do anything
+    # TODO: implement mutation logic
+    return copy.deepcopy(cfg)
 
 
 # ============================================================
 # 3) HILL CLIMBING SEARCH
 # ============================================================
+
+def generate_and_select_best_neighbor(
+    current_cfg: Dict[str, Any],
+    param_spec: Dict[str, Any],
+    rng: np.random.Generator,
+    neighbors_per_iter: int,
+    env_id: str,
+    policy,
+    defaults: Dict[str, Any]
+) -> Tuple[Dict[str, Any], Dict[str, Any], float, int]:
+    """
+    Generate neighbors and select the best one.
+    
+    Returns:
+        (best_neighbor_cfg, best_neighbor_obj, best_neighbor_fit, best_neighbor_seed)
+    """
+    best_neighbor_fit = float("inf")
+    best_neighbor_cfg = None
+    best_neighbor_obj = None
+    best_neighbor_seed = None
+    
+    for _ in range(neighbors_per_iter):
+        neighbor = mutate_config(current_cfg, param_spec, rng)
+        nbr_seed = int(rng.integers(1e9))
+        crashed, nbr_ts = run_episode(env_id, neighbor, policy, defaults, nbr_seed)
+        nbr_obj = compute_objectives_from_time_series(nbr_ts)
+        nbr_fit = compute_fitness(nbr_obj)
+        
+        if nbr_fit < best_neighbor_fit:
+            best_neighbor_fit = nbr_fit
+            best_neighbor_cfg = neighbor
+            best_neighbor_obj = nbr_obj
+            best_neighbor_seed = nbr_seed
+    
+    return best_neighbor_cfg, best_neighbor_obj, best_neighbor_fit, best_neighbor_seed
+
 
 def hill_climb(
     env_id: str,
@@ -190,11 +228,32 @@ def hill_climb(
 
     history = [best_fit]
 
-    # TODO (students): implement HC loop
-    # - generate neighbors
-    # - evaluate
-    # - pick best
-    # - accept if improved
-    # - early stop on crash (optional)
-
-    raise NotImplementedError
+    for _ in range(iterations):
+        if best_obj["crash_count"] == 1:
+            break
+        
+        # Get a neighbor
+        nbr_cfg, nbr_obj, nbr_fit, nbr_seed = generate_and_select_best_neighbor(
+            current_cfg, param_spec, rng, neighbors_per_iter,
+            env_id, policy, defaults
+        )
+        
+        if nbr_fit < cur_fit:
+            current_cfg = nbr_cfg
+            cur_fit = nbr_fit
+            
+            if nbr_fit < best_fit:
+                best_cfg = nbr_cfg
+                best_obj = nbr_obj
+                best_fit = nbr_fit
+                best_seed_base = nbr_seed
+        
+        history.append(best_fit)
+    
+    return {
+        "best_cfg": best_cfg,
+        "best_objectives": best_obj,
+        "best_fitness": best_fit,
+        "best_seed_base": best_seed_base,
+        "history": history
+    }
