@@ -58,8 +58,27 @@ def compute_objectives_from_time_series(time_series: List[Dict[str, Any]]) -> Di
     NOTE: If you want, you can add more objectives (lane-specific distances, time-to-crash, etc.)
     but keep the keys above at least.
     """
-    # TODO (students)
-    raise NotImplementedError
+    crash_count = 0
+    min_distance = float("inf")
+
+    for frame in time_series:
+        # If a crash occurs in any frame, mark the scenario as crashing
+        crash_count |= int(frame["crashed"])
+
+        # Get ego vehicle position
+        ego_pos = np.array(frame["ego"]["pos"])
+
+        # Compute distance to every other vehicle in the frame
+        for other in frame["others"]:
+            other_pos = np.array(other["pos"])
+            distance = np.linalg.norm(ego_pos - other_pos)
+            # Keep the smallest distance observed so far
+            min_distance = min(min_distance, distance)
+
+    return {
+        "crash_count": crash_count,
+        "min_distance": float(min_distance),
+    }
 
 
 def compute_fitness(objectives: Dict[str, Any]) -> float:
