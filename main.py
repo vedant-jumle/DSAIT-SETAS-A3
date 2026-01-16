@@ -14,6 +14,25 @@ def main():
     print(f"✅ Found {len(crashes)} crashes.")
     #if crashes:
     #    print(crashes)
+    
+    
+    # Uncomment following block to run the Hill Climbing search with some printing included.
+    # result = hill_climb(
+    #     env_id=env_id,
+    #     base_cfg=base_cfg,
+    #     param_spec=param_spec,
+    #     policy=policy,
+    #     defaults=defaults,
+    #     seed=42,
+    #     iterations=20,
+    #     neighbors_per_iter=5
+    # )
+
+    # print(f"\n✅ Hill Climbing Results:")
+    # print(f"   Best fitness: {result['best_fitness']}")
+    # print(f"   Crash found: {result['best_objectives']['crash_count'] == 1}")
+    # print(f"   Min distance: {result['best_objectives']['min_distance']:.2f}")
+    # print(f"   Best config: {result['best_cfg']}")
 
 if __name__ == "__main__":
     main()
