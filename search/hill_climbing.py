@@ -28,6 +28,7 @@ import copy
 from typing import Dict, Any, List, Tuple, Optional
 
 import numpy as np
+from tqdm import trange
 
 from envs.highway_env_utils import run_episode
 
@@ -142,7 +143,8 @@ def generate_and_select_best_neighbor(
     neighbors_per_iter: int,
     env_id: str,
     policy,
-    defaults: Dict[str, Any]
+    defaults: Dict[str, Any],
+    seed_base: int
 ) -> Tuple[Dict[str, Any], Dict[str, Any], float, int]:
     """
     Generate neighbors and select the best one.
@@ -153,12 +155,12 @@ def generate_and_select_best_neighbor(
     best_neighbor_fit = float("inf")
     best_neighbor_cfg = None
     best_neighbor_obj = None
-    best_neighbor_seed = None
+    best_neighbor_seed = seed_base
     
     for _ in range(neighbors_per_iter):
         neighbor = mutate_config(current_cfg, param_spec, rng)
-        nbr_seed = int(rng.integers(1e9))
-        crashed, nbr_ts = run_episode(env_id, neighbor, policy, defaults, nbr_seed)
+        # Use the same seed for all evaluations for fair comparison
+        crashed, nbr_ts = run_episode(env_id, neighbor, policy, defaults, seed_base)
         nbr_obj = compute_objectives_from_time_series(nbr_ts)
         nbr_fit = compute_fitness(nbr_obj)
         
@@ -166,7 +168,6 @@ def generate_and_select_best_neighbor(
             best_neighbor_fit = nbr_fit
             best_neighbor_cfg = neighbor
             best_neighbor_obj = nbr_obj
-            best_neighbor_seed = nbr_seed
     
     return best_neighbor_cfg, best_neighbor_obj, best_neighbor_fit, best_neighbor_seed
 
@@ -212,6 +213,8 @@ def hill_climb(
     """
     rng = np.random.default_rng(seed)
 
+    print(f"Running Hill Climbing for {iterations} iterations...")
+    
     # TODO (students): choose initialization (base_cfg or random scenario)
     current_cfg = dict(base_cfg)
 
@@ -226,16 +229,19 @@ def hill_climb(
     best_fit = float(cur_fit)
     best_seed_base = seed_base
 
+    print(f"Initial fitness: {best_fit:.4f} (crash={best_obj['crash_count']}, min_dist={best_obj['min_distance']:.2f})")
+    
     history = [best_fit]
 
-    for _ in range(iterations):
+    for i in trange(iterations, desc="Hill Climbing"):
         if best_obj["crash_count"] == 1:
+            print(f"\n💥 Crash found at iteration {i}! Stopping early.")
             break
         
         # Get a neighbor
         nbr_cfg, nbr_obj, nbr_fit, nbr_seed = generate_and_select_best_neighbor(
             current_cfg, param_spec, rng, neighbors_per_iter,
-            env_id, policy, defaults
+            env_id, policy, defaults, seed_base
         )
         
         if nbr_fit < cur_fit:
@@ -247,8 +253,14 @@ def hill_climb(
                 best_obj = nbr_obj
                 best_fit = nbr_fit
                 best_seed_base = nbr_seed
+                print(f"\n✨ Improved! Iter {i}: fitness={best_fit:.4f} (crash={best_obj['crash_count']}, min_dist={best_obj['min_distance']:.2f})")
         
         history.append(best_fit)
+    
+    print(f"\n✅ Hill Climbing Complete!")
+    print(f"   Final best fitness: {best_fit:.4f}")
+    print(f"   Crash found: {best_obj['crash_count'] == 1}")
+    print(f"   Min distance: {best_obj['min_distance']:.2f}")
     
     return {
         "best_cfg": best_cfg,
