@@ -127,9 +127,111 @@ def mutate_config(
       - multiple-parameter mutation
       - adaptive step sizes, etc.
     """
-    # For now don't do anything
-    # TODO: implement mutation logic
-    return copy.deepcopy(cfg)
+    new_cfg = copy.deepcopy(cfg)
+
+    # === Multi-Strategy Mutation ===
+    # We use three strategies with different exploration/exploitation tradeoffs:
+    #   1. Single-param fine-tune (40%): small local perturbation
+    #   2. Multi-param exploration (35%): mutate several params at once
+    #   3. Danger-biased mutation (25%): bias toward crash-prone configurations
+
+    strategy = rng.random()
+
+    if strategy < 0.40:
+        # --- Strategy 1: Single-parameter fine-tune ---
+        # Pick one random parameter and apply a small perturbation
+        param = rng.choice(list(param_spec.keys()))
+        spec = param_spec[param]
+
+        if spec["type"] == "int":
+            # Small integer step: ±1 or ±2
+            delta = rng.choice([-2, -1, 1, 2])
+            new_val = cfg.get(param, spec["min"]) + delta
+            new_cfg[param] = int(np.clip(new_val, spec["min"], spec["max"]))
+        else:
+            # Gaussian perturbation with 10% of range as sigma
+            sigma = (spec["max"] - spec["min"]) * 0.10
+            new_val = cfg.get(param, spec["min"]) + rng.normal(0, sigma)
+            new_cfg[param] = float(np.clip(new_val, spec["min"], spec["max"]))
+
+    elif strategy < 0.75:
+        # --- Strategy 2: Multi-parameter exploration ---
+        # Each parameter has 40% chance of being mutated
+        mutation_prob = 0.40
+        mutated_any = False
+
+        for param, spec in param_spec.items():
+            if rng.random() < mutation_prob:
+                mutated_any = True
+                if spec["type"] == "int":
+                    delta = rng.integers(-3, 4)  # [-3, 3]
+                    new_val = cfg.get(param, spec["min"]) + delta
+                    new_cfg[param] = int(np.clip(new_val, spec["min"], spec["max"]))
+                else:
+                    sigma = (spec["max"] - spec["min"]) * 0.15
+                    new_val = cfg.get(param, spec["min"]) + rng.normal(0, sigma)
+                    new_cfg[param] = float(np.clip(new_val, spec["min"], spec["max"]))
+
+        # Guarantee at least one mutation
+        if not mutated_any:
+            param = rng.choice(list(param_spec.keys()))
+            spec = param_spec[param]
+            if spec["type"] == "int":
+                new_cfg[param] = int(rng.integers(spec["min"], spec["max"] + 1))
+            else:
+                new_cfg[param] = float(rng.uniform(spec["min"], spec["max"]))
+
+    else:
+        # --- Strategy 3: Danger-biased mutation ---
+        # Domain knowledge: crashes are more likely with:
+        #   - More vehicles (higher density)
+        #   - Smaller spacing (less reaction time)
+        #   - Middle lanes (more neighbors)
+
+        param = rng.choice(list(param_spec.keys()))
+        spec = param_spec[param]
+        current_val = cfg.get(param, spec["min"])
+
+        if param == "vehicles_count":
+            # Bias toward more vehicles (70% increase, 30% decrease)
+            if rng.random() < 0.70:
+                delta = rng.integers(1, 8)
+            else:
+                delta = -rng.integers(1, 4)
+            new_cfg[param] = int(np.clip(current_val + delta, spec["min"], spec["max"]))
+
+        elif param in ["initial_spacing", "ego_spacing"]:
+            # Bias toward smaller spacing (tighter traffic)
+            if rng.random() < 0.70:
+                # Decrease spacing
+                delta = -abs(rng.normal(0, 0.4))
+            else:
+                delta = rng.normal(0, 0.3)
+            new_cfg[param] = float(np.clip(current_val + delta, spec["min"], spec["max"]))
+
+        elif param == "lanes_count":
+            # More lanes = more traffic variety, slight bias upward
+            delta = rng.choice([-1, 1, 1, 2])
+            new_cfg[param] = int(np.clip(current_val + delta, spec["min"], spec["max"]))
+
+        elif param == "initial_lane_id":
+            # Bias toward middle lanes (more neighbors = more danger)
+            lanes = new_cfg.get("lanes_count", cfg.get("lanes_count", 3))
+            middle = (lanes - 1) / 2
+            # Move toward middle with 60% prob
+            if rng.random() < 0.60 and current_val != int(middle):
+                new_cfg[param] = int(current_val + np.sign(middle - current_val))
+            else:
+                new_cfg[param] = int(np.clip(current_val + rng.choice([-1, 1]), 0, lanes - 1))
+
+    # === Constraint Repair ===
+    # Ensure initial_lane_id is valid for the current lanes_count
+    lanes = new_cfg.get("lanes_count", cfg.get("lanes_count", 3))
+    if "initial_lane_id" in new_cfg:
+        new_cfg["initial_lane_id"] = min(new_cfg["initial_lane_id"], lanes - 1)
+        new_cfg["initial_lane_id"] = max(new_cfg["initial_lane_id"], 0)
+
+    return new_cfg
 
 
 # ============================================================
