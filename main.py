@@ -27,14 +27,14 @@ def main():
         param_spec=param_spec,
         policy=policy,
         defaults=defaults,
-        seed=532,
+        seed=1362,
         iterations=25,
         neighbors_per_iter=6
     )
     
     # Seeds to use:
-    # 532 -> Contiuously increase fitness and crash
-    # 1362 -> Get stuck in local optimum once, then restart and crash
+    # 532 -> Contiuously increase fitness and crash on iteration 11
+    # 1362 -> Get stuck in local optimum once at iteration 6, then restarts and crashes at iteration 8
 
     print(f"\n✅ Hill Climbing Results:")
     print(f"   Best fitness: {result['best_fitness']}")
