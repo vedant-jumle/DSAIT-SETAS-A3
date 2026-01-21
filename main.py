@@ -27,7 +27,7 @@ def main():
         param_spec=param_spec,
         policy=policy,
         defaults=defaults,
-        seed=1362,
+        seed=532,
         iterations=25,
         neighbors_per_iter=6
     )
