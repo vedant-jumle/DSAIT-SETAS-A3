@@ -1,0 +1,173 @@
+\section{Detailed Experimental Results}
+
+\subsection{Hill Climbing Run Details}
+
+\subsubsection{Run 1: Seed 532}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Parameter} & \textbf{Value} \\
+\hline
+Seed & 532 \\
+Iterations & 25 (stopped at 12) \\
+Neighbors per iteration & 6 \\
+Total evaluations & 73 \\
+Runtime & 310.24 seconds \\
+\hline
+\end{tabular}
+\caption{HC Run 1 configuration}
+\end{table}
+
+\textbf{Fitness progression:}
+\begin{itemize}
+    \item Initial: 33.83 (no crash, min\_dist=6.53)
+    \item Iter 1: 26.18 (improved)
+    \item Iter 3: 24.09 (improved)
+    \item Iter 8: 23.52 (improved)
+    \item Iter 10: 21.26 (improved)
+    \item Iter 11: -1.00 (CRASH FOUND)
+\end{itemize}
+
+\textbf{Crash configuration:}
+\begin{verbatim}
+{
+    "vehicles_count": 29,
+    "lanes_count": 3,
+    "initial_spacing": 2.38,
+    "ego_spacing": 1.0,
+    "initial_lane_id": 1
+}
+\end{verbatim}
+
+\subsubsection{Run 2: Seed 1362}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Parameter} & \textbf{Value} \\
+\hline
+Seed & 1362 \\
+Iterations & 25 (stopped at 9) \\
+Neighbors per iteration & 6 \\
+Total evaluations & 55 \\
+Runtime & 186.75 seconds \\
+\hline
+\end{tabular}
+\caption{HC Run 2 configuration}
+\end{table}
+
+\textbf{Fitness progression:}
+\begin{itemize}
+    \item Initial: 46.74 (no crash, min\_dist=4.00)
+    \item Iter 0: 29.82 (improved)
+    \item Iter 6: RESTART triggered (5 iterations without improvement)
+    \item Iter 8: -1.00 (CRASH FOUND after restart)
+\end{itemize}
+
+\textbf{Crash configuration:}
+\begin{verbatim}
+{
+    "vehicles_count": 22,
+    "lanes_count": 8,
+    "initial_spacing": 0.5,
+    "ego_spacing": 1.0,
+    "initial_lane_id": 0
+}
+\end{verbatim}
+
+\subsection{Random Search Run Details}
+
+\subsubsection{Run 1: Seed 12288}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Parameter} & \textbf{Value} \\
+\hline
+Seed & 12288 \\
+Scenarios evaluated & 50 \\
+Crashes found & 1 (at scenario 27) \\
+Runtime & 232.83 seconds \\
+\hline
+\end{tabular}
+\caption{RS Run 1 configuration}
+\end{table}
+
+\textbf{Crash configuration:}
+\begin{verbatim}
+{
+    "vehicles_count": 43,
+    "lanes_count": 10,
+    "initial_spacing": 3.71,
+    "ego_spacing": 2.67,
+    "initial_lane_id": 3
+}
+\end{verbatim}
+
+\subsubsection{Run 2: Seed 99999}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Parameter} & \textbf{Value} \\
+\hline
+Seed & 99999 \\
+Scenarios evaluated & 50 \\
+Crashes found & 1 (at scenario 18) \\
+Runtime & 205.00 seconds \\
+\hline
+\end{tabular}
+\caption{RS Run 2 configuration}
+\end{table}
+
+\textbf{Crash configuration:}
+\begin{verbatim}
+{
+    "vehicles_count": 56,
+    "lanes_count": 6,
+    "initial_spacing": 1.95,
+    "ego_spacing": 3.82,
+    "initial_lane_id": 1
+}
+\end{verbatim}
+
+\subsection{Crash Scenario Objectives Comparison}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+\textbf{Metric} & \textbf{HC \#1} & \textbf{HC \#2} & \textbf{RS \#1} & \textbf{RS \#2} \\
+\hline
+min\_distance & 4.00 & 4.05 & -- & -- \\
+avg\_closest\_distance & 8.48 & 13.53 & -- & -- \\
+speed\_variance & 2.80 & 19.94 & -- & -- \\
+lane\_changes & 3 & 1 & -- & -- \\
+avg\_position\_change & 4.17 & 24.46 & -- & -- \\
+\hline
+\end{tabular}
+\caption{Objective metrics for crash scenarios (RS metrics not recorded)}
+\end{table}
+
+\subsection{Search Space Bounds}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Parameter} & \textbf{Type} & \textbf{Min} & \textbf{Max} \\
+\hline
+\texttt{vehicles\_count} & int & 5 & 60 \\
+\texttt{lanes\_count} & int & 3 & 10 \\
+\texttt{initial\_spacing} & float & 0.5 & 5.0 \\
+\texttt{ego\_spacing} & float & 1.0 & 4.0 \\
+\texttt{initial\_lane\_id} & int & 0 & lanes-1 \\
+\hline
+\end{tabular}
+\caption{Search space parameter bounds}
+\end{table}

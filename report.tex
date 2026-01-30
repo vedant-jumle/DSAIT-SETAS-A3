@@ -1,0 +1,64 @@
+\documentclass[a4paper]{article}
+\usepackage{float}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{hyperref}
+\usepackage[nottoc]{tocbibind}
+\usepackage{subfigure}
+\usepackage{fancyhdr}
+\usepackage{appendix}
+\usepackage{titlesec}
+\usepackage{longtable}
+\usepackage{listings}
+\usepackage{twemojis}
+\usepackage{multirow}
+\usepackage{amsmath}
+\usepackage{pifont}
+\usepackage[margin=1in]{geometry}
+\setlength{\parindent}{0pt}
+
+
+\usepackage{multirow}
+\usepackage{amssymb}
+\usepackage{graphicx} % for \rotatebox
+\newcommand{\cmark}{\ding{51}} % checkmark
+\usepackage{pifont} % for \ding
+
+\title{
+    \includegraphics[width=8cm, keepaspectratio]{img/tudelftlogo.png}\\
+    \vspace*{2cm}
+    \textbf{
+        Software Engineering and Testing for AI Systems: \\ Group Assignment 3\\
+        [DSAIT4015]\\
+        Group 21\\
+    }\\
+    \vspace*{1cm}
+}
+
+\author{
+    Navroop Kaur Singh (5107563)\\
+    Vedant Jumle (5296196)\\
+    Shubhamkar Joshi (6433758)\\
+    Wishaal Kanhai (5679710)\\
+}
+\date{January 2026}
+
+\begin{document}
+
+\maketitle
+\newpage
+\tableofcontents
+\newpage
+\input{sections/part1}
+\input{sections/part2}
+\input{sections/part3}
+
+\addappheadtotoc
+\newpage
+\begin{appendices}
+    \input{appendices/appendix_results}
+\end{appendices}
+
+% \bibliographystyle{plainurl}
+% \bibliography{bibtex}    
+
+\end{document}

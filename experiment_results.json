@@ -1,0 +1,106 @@
+{
+  "hill_climbing": [
+    {
+      "method": "Hill Climbing",
+      "seed": 532,
+      "runtime_seconds": 310.24,
+      "iterations": 12,
+      "evaluations": 73,
+      "crash_found": true,
+      "min_distance": 4.0005,
+      "best_config": {
+        "duration": 30,
+        "simulation_frequency": 25,
+        "policy_frequency": 5,
+        "vehicles_count": 29,
+        "initial_spacing": 2.377557073317779,
+        "ego_spacing": 1.0,
+        "lanes_count": 3,
+        "initial_lane_id": 1
+      },
+      "best_objectives": {
+        "crash_count": 1,
+        "min_distance": 4.000473354363469,
+        "avg_closest_distance": 8.479776803564617,
+        "speed_variance": 2.8026884886889243,
+        "lane_changes": 3,
+        "avg_position_change": 4.167372503092116
+      },
+      "best_fitness": -1.0,
+      "best_seed_base": 946153107
+    },
+    {
+      "method": "Hill Climbing",
+      "seed": 1362,
+      "runtime_seconds": 186.75,
+      "iterations": 9,
+      "evaluations": 55,
+      "crash_found": true,
+      "min_distance": 4.0494,
+      "best_config": {
+        "vehicles_count": 22,
+        "lanes_count": "8",
+        "initial_spacing": 0.5,
+        "ego_spacing": 1.0,
+        "initial_lane_id": 0
+      },
+      "best_objectives": {
+        "crash_count": 1,
+        "min_distance": 4.049431020316484,
+        "avg_closest_distance": 13.527558601380909,
+        "speed_variance": 19.941068960041292,
+        "lane_changes": 1,
+        "avg_position_change": 24.45691976328131
+      },
+      "best_fitness": -1.0,
+      "best_seed_base": 441395355
+    }
+  ],
+  "random_search": [
+    {
+      "method": "Random Search",
+      "seed": 12288,
+      "n_scenarios": 50,
+      "runtime_seconds": 232.83,
+      "evaluations": 50,
+      "crashes_found": 1,
+      "crash_configs": [
+        {
+          "cfg": {
+            "lanes_count": 10,
+            "vehicles_count": 43,
+            "initial_spacing": 3.7120871699838873,
+            "ego_spacing": 2.6675044097133638,
+            "initial_lane_id": 3,
+            "duration": 30,
+            "simulation_frequency": 25,
+            "policy_frequency": 5
+          },
+          "seed": 74043312
+        }
+      ]
+    },
+    {
+      "method": "Random Search",
+      "seed": 99999,
+      "n_scenarios": 50,
+      "runtime_seconds": 205.84,
+      "crashes_found": 1,
+      "crash_configs": [
+        {
+          "cfg": {
+            "lanes_count": 6,
+            "vehicles_count": 56,
+            "initial_spacing": 1.9480850903556202,
+            "ego_spacing": 3.8205430096495645,
+            "initial_lane_id": 1,
+            "duration": 30,
+            "simulation_frequency": 25,
+            "policy_frequency": 5
+          },
+          "seed": 494451580
+        }
+      ]
+    }
+  ]
+}

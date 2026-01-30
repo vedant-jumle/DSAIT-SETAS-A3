@@ -1,0 +1,78 @@
+{
+  "hill_climbing_runs": [
+    {
+      "seed": 532,
+      "runtime_seconds": 310.24,
+      "total_iterations": 12,
+      "total_evaluations": 73,
+      "crash_found": true,
+      "fitness_progression": [
+        {"iteration": 0, "fitness": 33.83, "crash": false, "min_dist": 6.53, "improved": false, "note": "initial"},
+        {"iteration": 1, "fitness": 26.18, "crash": false, "min_dist": null, "improved": true},
+        {"iteration": 3, "fitness": 24.09, "crash": false, "min_dist": null, "improved": true},
+        {"iteration": 8, "fitness": 23.52, "crash": false, "min_dist": null, "improved": true},
+        {"iteration": 10, "fitness": 21.26, "crash": false, "min_dist": null, "improved": true},
+        {"iteration": 11, "fitness": -1.00, "crash": true, "min_dist": 4.00, "improved": true, "note": "CRASH FOUND"}
+      ],
+      "crash_config": {
+        "vehicles_count": 29,
+        "lanes_count": 3,
+        "initial_spacing": 2.38,
+        "ego_spacing": 1.0,
+        "initial_lane_id": 1
+      }
+    },
+    {
+      "seed": 1362,
+      "runtime_seconds": 186.75,
+      "total_iterations": 9,
+      "total_evaluations": 55,
+      "crash_found": true,
+      "fitness_progression": [
+        {"iteration": 0, "fitness": 46.74, "crash": false, "min_dist": 4.00, "improved": false, "note": "initial", "debug": {"speed_var": 5.30, "lane_changes": 2, "avg_pos_change": 5.59, "avg_closest": 13.21}},
+        {"iteration": 1, "fitness": 29.82, "crash": false, "min_dist": 8.12, "improved": true, "debug": {"speed_var": 8.09, "lane_changes": 2, "avg_pos_change": 4.27, "avg_closest": 10.22}},
+        {"iteration": 6, "fitness": null, "crash": false, "min_dist": null, "improved": false, "note": "RESTART triggered - 5 iterations without improvement"},
+        {"iteration": 8, "fitness": -1.00, "crash": true, "min_dist": 4.05, "improved": true, "note": "CRASH FOUND after restart", "debug": {"speed_var": 19.94, "lane_changes": 1, "avg_pos_change": 24.46, "avg_closest": 13.53}}
+      ],
+      "crash_config": {
+        "vehicles_count": 22,
+        "lanes_count": 8,
+        "initial_spacing": 0.5,
+        "ego_spacing": 1.0,
+        "initial_lane_id": 0
+      }
+    }
+  ],
+  "random_search_runs": [
+    {
+      "seed": 12288,
+      "runtime_seconds": 232.83,
+      "n_scenarios": 50,
+      "crashes_found": 1,
+      "crash_at_scenario": 27,
+      "crash_config": {
+        "vehicles_count": 43,
+        "lanes_count": 10,
+        "initial_spacing": 3.71,
+        "ego_spacing": 2.67,
+        "initial_lane_id": 3
+      },
+      "crash_seed": 74043312
+    },
+    {
+      "seed": 99999,
+      "runtime_seconds": 205.84,
+      "n_scenarios": 50,
+      "crashes_found": 1,
+      "crash_at_scenario": 18,
+      "crash_config": {
+        "vehicles_count": 56,
+        "lanes_count": 6,
+        "initial_spacing": 1.95,
+        "ego_spacing": 3.82,
+        "initial_lane_id": 1
+      },
+      "crash_seed": 494451580
+    }
+  ]
+}
